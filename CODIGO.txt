@@ -1,0 +1,422 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class Multa {
+  final String cedula;
+  final String placaVehiculo;
+  final String motivo;
+  final String fotoEvidencia;
+  final String comentario;
+  final String notaVoz;
+  final double latitud;
+  final double longitud;
+  final DateTime fecha;
+  final String hora;
+
+  Multa({
+    required this.cedula,
+    required this.placaVehiculo,
+    required this.motivo,
+    required this.fotoEvidencia,
+    required this.comentario,
+    required this.notaVoz,
+    required this.latitud,
+    required this.longitud,
+    required this.fecha,
+    required this.hora,
+  });
+}
+
+class DetallesVehiculo {
+  final String placa;
+  final String marca;
+  final String modelo;
+
+  DetallesVehiculo({
+    required this.placa,
+    required this.marca,
+    required this.modelo,
+  });
+}
+
+class ServicioConsultaVehiculo {
+  Future<DetallesVehiculo> obtenerDetallesVehiculo(String placa) async {
+    // Simula la lógica para obtener detalles del vehículo desde un servicio/API
+    await Future.delayed(Duration(seconds: 2));
+    return DetallesVehiculo(
+      placa: placa,
+      marca: 'Toyota',
+      modelo: 'Corolla',
+    );
+  }
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: LoginScreen(),
+    );
+  }
+}
+
+class LoginScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Inicio de Sesión'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MenuPrincipalScreen(),
+              ),
+            );
+          },
+          child: Text('Iniciar Sesión'),
+        ),
+      ),
+    );
+  }
+}
+
+class MenuPrincipalScreen extends StatelessWidget {
+  final List<Multa> multas = [];
+  final ServicioConsultaVehiculo servicioConsultaVehiculo =
+      ServicioConsultaVehiculo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Menú Principal'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            DrawerHeader(
+              child: Text('Menú'),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
+            ListTile(
+              title: Text('Multas Registradas'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MultasRegistradasScreen(multas: multas),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              title: Text('Registrar Multa'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        RegistrarMultaScreen(registrarMulta: _registrarMulta),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              title: Text('Noticias'),
+              onTap: () async {
+                await _mostrarNoticias(context);
+              },
+            ),
+            ListTile(
+              title: Text('Estado del Clima'),
+              onTap: () async {
+                await _mostrarEstadoClima(context);
+              },
+            ),
+            ListTile(
+              title: Text('Horóscopo'),
+              onTap: () async {
+                await _mostrarHoroscopo(context);
+              },
+            ),
+            ListTile(
+              title: Text('Consulta de Vehículo por Placa'),
+              onTap: () async {
+                await _consultarVehiculoPorPlaca(context);
+              },
+            ),
+          ],
+        ),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            // Aquí puedes hacer la lógica para registrar una multa
+            final nuevaMulta = Multa(
+              cedula: 'CedulaInfractor',
+              placaVehiculo: 'PlacaVehiculo',
+              motivo: 'Motivo',
+              fotoEvidencia: 'FotoEvidencia',
+              comentario: 'Comentario',
+              notaVoz: 'NotaVoz',
+              latitud: 0.0,
+              longitud: 0.0,
+              fecha: DateTime.now(),
+              hora: DateTime.now().toLocal().toString().split(' ')[1],
+            );
+            _registrarMulta(nuevaMulta);
+          },
+          child: Text('Registrar Multa'),
+        ),
+      ),
+    );
+  }
+
+  void _registrarMulta(Multa multa) {
+    multas.add(multa);
+  }
+
+  Future<void> _mostrarNoticias(BuildContext context) async {
+    // Aquí puedes implementar la lógica para obtener y mostrar noticias
+    // Por ejemplo, utilizando el paquete http y una solicitud GET a la API de noticias
+  }
+
+  Future<void> _mostrarEstadoClima(BuildContext context) async {
+    // Aquí puedes implementar la lógica para obtener y mostrar el estado del clima
+    // Puedes utilizar servicios/APIs de pronóstico del clima disponibles en línea
+  }
+
+  Future<void> _mostrarHoroscopo(BuildContext context) async {
+    // Aquí puedes implementar la lógica para obtener y mostrar el horóscopo
+    // Puedes utilizar servicios/APIs de horóscopo disponibles en línea
+  }
+
+  Future<void> _consultarVehiculoPorPlaca(BuildContext context) async {
+    final placa = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Consulta de Vehículo por Placa'),
+          content: TextField(
+            decoration:
+                InputDecoration(labelText: 'Ingrese la placa del vehículo'),
+            onChanged: (value) => Navigator.of(context).pop(value),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(null);
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop('');
+              },
+              child: Text('Consultar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (placa != null && placa.isNotEmpty) {
+      final detallesVehiculo =
+          await servicioConsultaVehiculo.obtenerDetallesVehiculo(placa);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Detalles del Vehículo'),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Placa: ${detallesVehiculo.placa}'),
+                Text('Marca: ${detallesVehiculo.marca}'),
+                Text('Modelo: ${detallesVehiculo.modelo}'),
+                // Agrega más detalles según tus necesidades
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cerrar'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+}
+
+class MultasRegistradasScreen extends StatelessWidget {
+  final List<Multa> multas;
+
+  MultasRegistradasScreen({required this.multas});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Multas Registradas'),
+      ),
+      body: ListView.builder(
+        itemCount: multas.length,
+        itemBuilder: (context, index) {
+          final multa = multas[index];
+          return ListTile(
+            title: Text('Código: ${multa.cedula}'),
+            subtitle:
+                Text('Nombre: ${multa.placaVehiculo}\nMotivo: ${multa.motivo}'),
+            onTap: () {
+              _mostrarDetalleMulta(context, multa);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  void _mostrarDetalleMulta(BuildContext context, Multa multa) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Detalle de Multa'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Cédula: ${multa.cedula}'),
+              Text('Placa del Vehículo: ${multa.placaVehiculo}'),
+              Text('Motivo: ${multa.motivo}'),
+              Text('Foto Evidencia: ${multa.fotoEvidencia}'),
+              Text('Comentario: ${multa.comentario}'),
+              Text('Nota de Voz: ${multa.notaVoz}'),
+              Text('Latitud: ${multa.latitud}'),
+              Text('Longitud: ${multa.longitud}'),
+              Text('Fecha: ${multa.fecha.toString()}'),
+              Text('Hora: ${multa.hora}'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class RegistrarMultaScreen extends StatefulWidget {
+  final Function registrarMulta;
+
+  RegistrarMultaScreen({required this.registrarMulta});
+
+  @override
+  _RegistrarMultaScreenState createState() => _RegistrarMultaScreenState();
+}
+
+class _RegistrarMultaScreenState extends State<RegistrarMultaScreen> {
+  final TextEditingController _cedulaController = TextEditingController();
+  final TextEditingController _placaVehiculoController =
+      TextEditingController();
+  final TextEditingController _motivoController = TextEditingController();
+  final TextEditingController _fotoEvidenciaController =
+      TextEditingController();
+  final TextEditingController _comentarioController = TextEditingController();
+  final TextEditingController _notaVozController = TextEditingController();
+  final TextEditingController _latitudController = TextEditingController();
+  final TextEditingController _longitudController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Registrar Multa'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _cedulaController,
+              decoration: InputDecoration(labelText: 'Cédula del Infractor'),
+            ),
+            TextField(
+              controller: _placaVehiculoController,
+              decoration: InputDecoration(labelText: 'Placa del Vehículo'),
+            ),
+            TextField(
+              controller: _motivoController,
+              decoration: InputDecoration(labelText: 'Motivo de la Multa'),
+            ),
+            TextField(
+              controller: _fotoEvidenciaController,
+              decoration: InputDecoration(labelText: 'Foto Evidencia'),
+            ),
+            TextField(
+              controller: _comentarioController,
+              decoration: InputDecoration(labelText: 'Comentario'),
+            ),
+            TextField(
+              controller: _notaVozController,
+              decoration: InputDecoration(labelText: 'Nota de Voz'),
+            ),
+            TextField(
+              controller: _latitudController,
+              decoration: InputDecoration(labelText: 'Latitud'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: _longitudController,
+              decoration: InputDecoration(labelText: 'Longitud'),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                final nuevaMulta = Multa(
+                  cedula: _cedulaController.text,
+                  placaVehiculo: _placaVehiculoController.text,
+                  motivo: _motivoController.text,
+                  fotoEvidencia: _fotoEvidenciaController.text,
+                  comentario: _comentarioController.text,
+                  notaVoz: _notaVozController.text,
+                  latitud: double.parse(_latitudController.text),
+                  longitud: double.parse(_longitudController.text),
+                  fecha: DateTime.now(),
+                  hora: DateTime.now().toLocal().toString().split(' ')[1],
+                );
+                widget.registrarMulta(nuevaMulta);
+                Navigator.pop(context);
+              },
+              child: Text('Registrar Multa'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
